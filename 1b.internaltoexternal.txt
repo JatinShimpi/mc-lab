@@ -1,0 +1,11 @@
+ORG 0000H
+MOV R2,#0AH // Initialise Counter for 5 Numbers
+MOV R0,#50H //Initialise Source Memory Location
+MOV DPTR,#0100H //Initialise Destination Memory Location
+LOOP: MOV A,@R0 // transfer first number to Accumulator from Source Memory Location
+MOVX @DPTR,A // transfer A content to Destination Memory Location
+INC R0 // increment Source Memory Location
+INC DPTR // increment Destination Memory Location
+DJNZ R2, LOOP // decrement counter, check 0 , if not jump to label LOOP
+ NOP
+END 
