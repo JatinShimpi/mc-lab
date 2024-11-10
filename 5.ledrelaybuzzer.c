@@ -1,6 +1,6 @@
 //Expt.4: Interfacing LEDs, Switches, Buzzer and Relay
 //Includes
-#include <p18f4520.h> //Include Controller specific .h
+#include <p18f4550.h> //Include Controller specific .h
 #include <delays.h>
 //Declarations
 #define BUZZER PORTAbits.RA3 //Buzzer connected to PORTA 3rd PIN

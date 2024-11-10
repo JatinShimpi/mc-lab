@@ -1,7 +1,7 @@
 // Draw and explain interfacing of 16x2 LCD with PIC18FXXX microcontroller in 8-bit
 // mode and also write an Embedded C Program to display word "SPPU".
 #include<p18f4520.h>
-#pragma config OSC=HS
+#pragma config FOSC=HS
 #pragma config PWRT=OFF
 #pragma config WDT=OFF
 #pragma config DEBUG=OFF, LVP=OFF
