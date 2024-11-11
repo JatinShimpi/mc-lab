@@ -1,29 +1,51 @@
+// Example code for setting up PWM on PIC18F4550
 #include <p18f4550.h>
 
-#pragma config FOSC = HS      // High-speed oscillator
-#pragma config WDT = OFF      // Watchdog Timer disabled
-#pragma config LVP = OFF      // Low Voltage Programming disabled
-
-void PWM_Init(unsigned int duty);
-
-void main(void) {
-    TRISCbits.TRISC2 = 0;    // Set RC2 as output for PWM signal
-    PWM_Init(512);           // Initialize PWM with 50% duty cycle (512 out of 1023)
-
-    while (1) {
-        // The motor will run continuously with a 50% duty cycle
-        // You can change the duty cycle by calling PWM_Init with a different value
-    }
+void PWM_Init(void) {
+    // Set CCP1 pin as output
+    TRISCbits.TRISC2 = 0;
+    
+    // Set up Timer2
+    T2CON = 0x04; // Prescaler 1:1, Timer2 on
+    PR2 = 255;    // PWM period
+    
+    // Configure CCP1 module for PWM mode
+    CCP1CON = 0x0C;
+    CCPR1L = 0x7F; // 50% duty cycle initially
+    
+    // Start Timer2
+    T2CONbits.TMR2ON = 1;
 }
 
-void PWM_Init(unsigned int duty) {
-    PR2 = 0xFF;              // Set the PWM period to maximum (~490 Hz)
-    CCP1CON = 0x0C;          // Set CCP1 in PWM mode
-    T2CON = 0x04;            // Timer2 on with 1:1 prescaler
-
-    // Set PWM duty cycle
-    CCPR1L = duty >> 2;                // Load the 8 most significant bits
-    CCP1CONbits.DC1B = duty & 0x03;    // Load the 2 least significant bits
-
-    T2CONbits.TMR2ON = 1;    // Start Timer2, which enables the PWM
+void PWM_SetDutyCycle(unsigned int duty) {
+    // Duty cycle is 10-bit, so we split it
+    CCPR1L = duty >> 2;
+    CCP1CONbits.DC1B = duty & 0x03;
+}
+void main() {
+    PWM_Init();
+    
+    // Set direction pins (example: PORTB pins)
+    TRISBbits.TRISB0 = 0; // Direction control pin 1
+    TRISBbits.TRISB1 = 0; // Direction control pin 2
+    
+    while(1) {
+        // Set direction
+        LATBbits.LATB0 = 1;
+        LATBbits.LATB1 = 0;
+        
+        // Control speed with PWM duty cycle
+        PWM_SetDutyCycle(128); // 50% speed, for example
+        
+        // Add code to change speed or direction as needed
+        Delay10KTCYx(100);
+        
+        // Change direction
+        LATBbits.LATB0 = 0;
+        LATBbits.LATB1 = 1;
+        
+        // Adjust speed
+        PWM_SetDutyCycle(192); // 75% speed
+        Delay10KTCYx(100);
+    }
 }
